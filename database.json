@@ -1,0 +1,11 @@
+{
+  "todos": [
+    {
+      "id": "f8b93180-ef18-48ae-b3fc-497cfac73618",
+      "text": "This is a sample todo",
+      "done": false,
+      "dateCreated": 1631326177561,
+      "dateUpdated": 1631326177561
+    }
+  ]
+}
