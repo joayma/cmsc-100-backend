@@ -1,4 +1,5 @@
 const { create } = require('./create');
+const { getMany } = require('./get-many');
 
 /**
  * 
@@ -8,4 +9,5 @@ const { create } = require('./create');
  */
  exports.todo = (app) => {
     create(app);
+    getMany(app);
 }

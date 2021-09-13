@@ -6,6 +6,41 @@
       "done": false,
       "dateCreated": 1631326177561,
       "dateUpdated": 1631326177561
+    },
+    {
+      "id": "0c9ff440-a969-47dd-a640-13a22332acfe",
+      "text": "Sample todo 1",
+      "isDone": false,
+      "dateCreated": 1631406826229,
+      "dateUpdated": 1631406826229
+    },
+    {
+      "id": "ef2130ae-6963-4927-90a1-ec9264e22dc2",
+      "text": "Sample todo 2",
+      "isDone": false,
+      "dateCreated": 1631406832945,
+      "dateUpdated": 1631406832945
+    },
+    {
+      "id": "4a950276-e00a-4b7f-8587-12d11dc3aa33",
+      "text": "Sample todo 3",
+      "isDone": false,
+      "dateCreated": 1631406836283,
+      "dateUpdated": 1631406836283
+    },
+    {
+      "id": "8243e155-ca95-4940-8bf6-a9139e3b5f46",
+      "text": "Sample todo 4",
+      "isDone": false,
+      "dateCreated": 1631406839648,
+      "dateUpdated": 1631406839648
+    },
+    {
+      "id": "dc96881b-42bd-4dcb-a14f-57ba72f65c41",
+      "text": "Sample todo 5",
+      "isDone": false,
+      "dateCreated": 1631406843212,
+      "dateUpdated": 1631406843212
     }
   ]
 }
