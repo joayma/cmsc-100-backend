@@ -6,7 +6,10 @@ const { build } = require('./app');
 
 async function start() {
     // calls to build an app
-    const app = await build();
+    const app = await build({
+        logger: true,
+        trustProxy: true
+    });
     const port = parseInt(process.env.PORT || '8080');
     const address = '0.0.0.0';
     const addr = await app.listen(port, address);

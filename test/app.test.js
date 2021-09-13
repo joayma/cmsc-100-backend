@@ -6,9 +6,7 @@ describe('For the route for root (/)', () => {
     let app;
     before(async () => {
         // initialize backend application
-        app = await build({
-            logger: false
-        });
+        app = await build();
     });
     it('it should return { success: true } when called using GET',  async () => {
         const response = await app.inject({

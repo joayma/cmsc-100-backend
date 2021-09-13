@@ -13,9 +13,7 @@ describe('For the route for creating todo POST: (/todo)', () => {
     
     before(async () => {
         // initialize backend application
-        app = await build({
-          logger: false
-        });
+        app = await build();
     });
 
     after(async () => {
