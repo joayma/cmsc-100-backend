@@ -1,5 +1,10 @@
-# GET get one todo
+# PUT update todo
 
-- can only be done by owner of the task or the admin of the task
-- the object returned should have the username, text, isDone, dateUpdated, and dateCreated
-- if taskId given in parameter is not found in database, return bad request (404)
+- Can be done by the owner or admin type
+- owner can update text or isDone but not all are required
+- admin type can only update isDone
+- if no payload has been sent or payload is empty, return bad request (400)
+- if admin type updates text, return forbidden (403)
+- if taskId in the parameter is not found in the database, return no found (404)
+- dateUpdated should be updated with the current date
+- should return text, username, isDone, dateCreated, and dateUpdated
