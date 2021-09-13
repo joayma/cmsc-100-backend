@@ -142,4 +142,31 @@ describe('For the route for getting many todos GET: (/todo)', () => {
         // last data id should be the same as id
         data[data.length - 1].id.should.equal(id);
     });
+
+    // happy path
+    it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 2 items', async () => {
+        const response = await app.inject({
+            method: 'GET',
+            url: '/todo?limit=2'
+        });
+
+        const payload = response.json();
+        const { statusCode } = response;
+        const { success, data } = payload;
+
+        success.should.equal(true);
+        statusCode.should.equal(200);
+        data.length.should.equal(2);
+
+        const todos = getTodos(filename, encoding);
+
+        for (const todo of data) {
+            const { text, isDone, id } = todo;
+            const index = todos.findIndex(todo => todo.id === id);
+            index.should.not.equal(-1);
+            const { text: textDatabase, isDone: isDoneDatabase } = todos[index];
+            text.should.equal(textDatabase);
+            isDone.should.equal(isDoneDatabase);
+        }
+    });
 });
