@@ -3,7 +3,7 @@ const { delay } = require('../../lib/delay');
 const { writeFileSync } = require('fs');
 const { join } = require('path');
 const { build } = require('../../app');
-const should = require('should');
+require('should');
 require('tap').mochaGlobals();
 
 describe('For the route for getting many todos GET: (/todo)', () => {
@@ -65,7 +65,7 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        data.length.should.equal(3);
+        data.length.should.equal(10);
 
         const todos = getTodos(filename, encoding);
 
@@ -92,7 +92,7 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        data.length.should.equal(3);
+        data.length.should.equal(10);
 
         for (let i = 0; i < data.length - 1; i++) {
             const prevTodo = data[i];
@@ -130,7 +130,7 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        (data.length <= 3).should.equal(true);
+        (data.length <= 10).should.equal(true);
 
         for (let i = 0; i < data.length - 1; i++) {
             const prevTodo = data[i];
