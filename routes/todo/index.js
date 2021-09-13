@@ -1,7 +1,8 @@
 const { create } = require('./create');
 const { getMany } = require('./get-many');
 const { get } = require('./get'); 
-const { update } = require('./update'); 
+const { update } = require('./update');
+const { deleteOne } = require('./delete');
 
 /**
  * 
@@ -14,4 +15,5 @@ const { update } = require('./update');
     getMany(app);
     get(app);
     update(app);
+    deleteOne(app);
 }
