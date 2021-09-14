@@ -1,6 +1,4 @@
-const { v4:uuid } = require('uuid');
-const { readFileSync, writeFileSync } = require('fs');
-const { join } = require('path');
+const { Todo } = require('../../db');
 
 exports.create = (app) => {
  app.post('/todo', {
@@ -12,7 +10,6 @@ exports.create = (app) => {
      */
 
     handler: async (request, response) => {
-        const id = uuid();
         const { body } = request;
         const { text, isDone = false} = body || {};
 
@@ -26,24 +23,12 @@ exports.create = (app) => {
                 })
         }
 
-        const filename = join(__dirname, '../../database.json');
-        const encoding = 'utf8';
-
-        const databaseStringContents = readFileSync(filename, encoding);
-        const database = JSON.parse(databaseStringContents);
-
-        const data = {
-            id,
+        const data = new Todo ({
             text,
             isDone,
-            dateCreated: new Date().getTime(),
-            dateUpdated: new Date().getTime()
-        }
+        });
 
-        database.todos.push(data);
-
-        const newDatabaseStringContents = JSON.stringify(database, null, 2);
-        writeFileSync(filename, newDatabaseStringContents, encoding);
+        await data.save();
 
         return {
             success: true,
