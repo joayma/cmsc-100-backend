@@ -1,5 +1,4 @@
-const { getTodos } = require('../../lib/get-todos');
-const { join } = require('path');
+const { Todo } = require('../../db');
 
 /**
  * 
@@ -16,16 +15,13 @@ exports.get = (app) => {
      *  @param {import('fastify').FastifyReply<Response>} response
      * 
      */
-    app.get('/todo/:id', (request,response) => {
+    app.get('/todo/:id', async (request,response) => {
         const { params } = request;
         const { id } = params;
-        const filename = join(__dirname, '../../database.json');
-        const encoding = 'utf8';
-        const todos = getTodos(filename, encoding);
 
-        const index = todos.findIndex(todo => todo.id === id);
+        const data = await Todo.findOne({ id }).exec();
 
-        if (index < 0) {
+        if (!data) {
             return response
                 .code(404)
                 .send({
@@ -34,8 +30,6 @@ exports.get = (app) => {
                     message: 'Todo doesn\'t exist.'
                 })
         }
-
-        const data = todos[index];
     
         return {
             success: true,
