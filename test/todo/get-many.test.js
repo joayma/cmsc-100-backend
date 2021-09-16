@@ -1,7 +1,5 @@
-const { getTodos } = require('../../lib/get-todos');
 const { delay } = require('../../lib/delay');
-const { writeFileSync } = require('fs');
-const { join } = require('path');
+const { mongoose, Todo } = require('../../db');
 const { build } = require('../../app');
 require('should');
 require('tap').mochaGlobals();
@@ -9,8 +7,6 @@ require('tap').mochaGlobals();
 describe('For the route for getting many todos GET: (/todo)', () => {
     let app;
     const ids = [];
-    const filename = join(__dirname, '../../database.json');
-    const encoding = 'utf8';
   
     before(async () => {
         // initialize the backend applicaiton
@@ -38,19 +34,11 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
     after(async () => {
         // clean up the database
-        const todos = getTodos(filename, encoding);
         for (const id of ids) {
-          // find the index
-          const index = todos.findIndex(todo => todo.id === id);
-    
-          // delete the id
-          if (index >= 0) {
-            todos.splice(index, 1);
-          }
-    
-          writeFileSync(filename, JSON.stringify({ todos }, null, 2), encoding);
+            await Todo.findOneAndDelete({ id });
         }
-      });
+        await mongoose.connection.close();
+    });
 
     // happy path
     it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 3 items', async () => {
@@ -67,13 +55,15 @@ describe('For the route for getting many todos GET: (/todo)', () => {
         statusCode.should.equal(200);
         data.length.should.equal(10);
 
-        const todos = getTodos(filename, encoding);
-
         for (const todo of data) {
             const { text, isDone, id } = todo;
-            const index = todos.findIndex(todo => todo.id === id);
-            index.should.not.equal(-1);
-            const { text: textDatabase, isDone: isDoneDatabase } = todos[index];
+
+            const { 
+                text: textDatabase, 
+                isDone: isDoneDatabase } = await Todo
+                .findOne({ id })
+                .exec();
+
             text.should.equal(textDatabase);
             isDone.should.equal(isDoneDatabase);
         }
@@ -102,9 +92,13 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
         }
 
-        const todos = getTodos(filename, encoding);
-        // sort in descending order
-        todos.sort((prev, next) => next.dateUpdated - prev.dateUpdated);
+        const todos = await Todo
+            .find()
+            .limit(5)
+            .sort({
+                dateUpdated: -1
+            })
+            .exec();
 
         const todo = todos[0];
         const responseTodo = data[0]
@@ -114,10 +108,11 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
     // happy path
     it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 3 items where the last item is updated on or after startDate', async () => {
-        const todos = getTodos(filename, encoding);
         const id = ids[parseInt(Math.random() * ids.length)];
-        const index = todos.findIndex(todo => todo.id === id);
-        const { dateUpdated: startDate } = todos[index];
+
+        const { dateUpdated: startDate } = await Todo
+            .findOne({ id })
+            .exec();
 
         const response = await app.inject({
             method: 'GET',
@@ -158,13 +153,15 @@ describe('For the route for getting many todos GET: (/todo)', () => {
         statusCode.should.equal(200);
         data.length.should.equal(2);
 
-        const todos = getTodos(filename, encoding);
-
         for (const todo of data) {
             const { text, isDone, id } = todo;
-            const index = todos.findIndex(todo => todo.id === id);
-            index.should.not.equal(-1);
-            const { text: textDatabase, isDone: isDoneDatabase } = todos[index];
+
+            const { 
+                text: textDatabase, 
+                isDone: isDoneDatabase } = await Todo
+                .findOne({ id })
+                .exec();
+                
             text.should.equal(textDatabase);
             isDone.should.equal(isDoneDatabase);
         }

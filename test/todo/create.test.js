@@ -1,6 +1,4 @@
-const { getTodos } = require('../../lib/get-todos');
-const { writeFileSync } = require('fs');
-const { join } = require('path');
+const { mongoose, Todo } = require('../../db');
 const { build } = require('../../app');
 const should = require('should');
 require('tap').mochaGlobals();
@@ -8,8 +6,6 @@ require('tap').mochaGlobals();
 describe('For the route for creating todo POST: (/todo)', () => {
     let app;
     const ids = [];
-    const filename = join(__dirname, '../../database.json');
-    const encoding = 'utf8';
     
     before(async () => {
         // initialize backend application
@@ -18,19 +14,11 @@ describe('For the route for creating todo POST: (/todo)', () => {
 
     after(async () => {
         // clean up the database
-        const todos = getTodos(filename, encoding);
         for (const id of ids) {
-          // find the index
-          const index = todos.findIndex(todo => todo.id === id);
-    
-          // delete the id
-          if (index >= 0) {
-            todos.splice(index, 1);
-          }
-    
-          writeFileSync(filename, JSON.stringify({ todos }, null, 2), encoding);
+            await Todo.findOneAndDelete({ id });
         }
-      });
+        await mongoose.connection.close();
+    });
     
     // happy path: payload has text and isDone property
     it('it should return { success: true, data: (new todo object) } and has a status code of 200 when called using POST', async () => {
@@ -53,10 +41,12 @@ describe('For the route for creating todo POST: (/todo)', () => {
         text.should.equal('This is a todo');
         isDone.should.equal(false);    
 
-        const todos = getTodos(filename, encoding);
-        const index = todos.findIndex(todo => todo.id === id);
-        index.should.not.equal(-1);
-        const { text: textDatabase, isDone: isDoneDatabase } = todos[index];
+        const { 
+            text: textDatabase, 
+            isDone: isDoneDatabase } = await Todo
+            .findOne({ id })
+            .exec();
+
         text.should.equal(textDatabase);
         isDone.should.equal(isDoneDatabase);
     
@@ -84,10 +74,12 @@ describe('For the route for creating todo POST: (/todo)', () => {
         text.should.equal('This is a todo 2');
         isDone.should.equal(false);    
 
-        const todos = getTodos(filename, encoding);
-        const index = todos.findIndex(todo => todo.id === id);
-        index.should.not.equal(-1);
-        const { text: textDatabase, isDone: isDoneDatabase } = todos[index];
+        const { 
+            text: textDatabase, 
+            isDone: isDoneDatabase } = await Todo
+            .findOne({ id })
+            .exec();
+
         text.should.equal(textDatabase);
         isDone.should.equal(isDoneDatabase);    
 
