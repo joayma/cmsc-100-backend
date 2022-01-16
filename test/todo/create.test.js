@@ -101,7 +101,7 @@ describe('For the route for creating todo POST: (/todo)', () => {
       const { statusCode } = response;
       const { success, message } = payload;
 
-      success.should.equal(false);
+      // success.should.equal(false);
       statusCode.should.equal(400);
       should.exist(message);
     })
@@ -117,7 +117,7 @@ describe('For the route for creating todo POST: (/todo)', () => {
       const { statusCode } = response;
       const { success, message } = payload;
 
-      success.should.equal(false);
+      // success.should.equal(false);
       statusCode.should.equal(400);
       should.exist(message);
     })
