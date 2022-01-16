@@ -1,5 +1,6 @@
 const { Todo } = require('../../db');
-
+const { definitions } = require('../../definitions');
+const { GetManyTodoResponse, GetManyTodoQuery } = definitions;
 /**
  * 
  * GET many todos
@@ -8,38 +9,55 @@ const { Todo } = require('../../db');
  */
 
 exports.getMany = (app) => {
-    /**
-     * Gets the todos from the database
-     * 
-     *  @param {import('fastify').FastifyRequest} request
-     */
-    app.get('/todo', async (request) => {
-        const { query } = request
-        const { limit = 10, startDate } = query;
-
-        // if there is a startDate, the query should
-        // look for the todos with dateUpdated property
-        // that is greather than or equal to the startDate
-        // else, it will search for all given the limit
-        const options = startDate
-            ? {
-                dateUpdated: {
-                    $gte: startDate
-                }
+    app.get('/todo', {
+        schema: {
+            description: 'Gets many todos',
+            tags: ['Todo'],
+            summary: 'Gets many todos',
+            query: GetManyTodoQuery,
+            response: {
+                200: GetManyTodoResponse
             }
-            : {};
+        },
+         /**
+         * handles the request for a given route
+         * 
+         *  @param {import('fastify').FastifyRequest} request
+         */
+        handler: async (request) => {
+            const { query } = request
+            const { limit = 10, startDate, endDate } = query;
+
+            const options = {};
+
+            if (startDate) {
+                options.dateUpdated = {};
+                options.dateUpdated.$gte = startDate;
+            }
+
+            if (endDate) {
+                options.dateUpdated = options.dateUpdated || {};
+                options.dateUpdated.$lte = endDate;
+            }
+
+            const data = await Todo
+                .find(options)
+                .limit(parseInt(limit))
+                .sort({
+                    // starts the query on starDate if startDate exists
+                    dateUpdated: startDate && !endDate ? 1 : -1
+                })
+                .exec();
+            
+            // sorts todos in descending order
+            if (startDate && !endDate) {
+                data.sort((prev, next) => next.dateUpdated - prev.dateUpdated);
+            }
         
-        const data = await Todo
-            .find(options)
-            .limit(parseInt(limit))
-            .sort({
-                dateUpdated: -1
-            })
-            .exec();
-    
-        return {
-            success: true,
-            data
-        }      
+            return {
+                success: true,
+                data
+            }      
+        }
     });
 }

@@ -1,5 +1,6 @@
 const { todo } = require('./todo');
-
+const { definitions } = require('../definitions');
+const { SuccessResponse } = definitions;
 /**
  * 
  * @param {*} app 
@@ -7,6 +8,14 @@ const { todo } = require('./todo');
 exports.routes = (app) => {
     // access root address - http://localhost/
     app.get('/', {
+        schema: {
+            description: 'Server root route',
+            tags: ['Root'],
+            summary: 'Server root route',
+            response: {
+                200: SuccessResponse
+            }
+        },
         /**
          * handles the request for a given route
          */
