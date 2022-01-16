@@ -25,16 +25,6 @@ exports.create = (app) => {
         const { body } = request;
         const { text, isDone = false} = body;
 
-        // if (!text) {
-        //     return response
-        //         .code(400)
-        //         .send({
-        //             success: false,
-        //             code: 'todo/malformed',
-        //             message: 'Payload doesn\'t have text property.'
-        //         })
-        // }
-
         const data = new Todo ({
             text,
             isDone,
