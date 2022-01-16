@@ -11,7 +11,8 @@ exports.errorHandler = (error, request, response) => {
 
     const errors = {
         'todo/not-found': 'Todo does not exist.',
-        'request/malformed': 'Payload doesn\'t have the required properties.'
+        'request/malformed': 'Payload doesn\'t have the required properties.',
+        'auth/wrond-password': 'Password is not correct.'
     }
 
     if (error.validation && error.validation.length && error.validationContext === 'body') {
