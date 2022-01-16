@@ -5,6 +5,34 @@ const UniqueIDData = {
     example: '18e83369-45bb-4c45-9c9e-5e0bd70d2e5a'
 };
 
+const UsernameData = {
+    type: 'string',
+    description: 'A unique username',
+    value: 'jojoestar',
+    example: 'jojoestar'
+};
+
+const FirstNameData = {
+    type: 'string',
+    description: 'First name of the user',
+    value: 'joseph',
+    example: 'joseph'
+};
+
+const LastNameData = {
+    type: 'string',
+    description: 'Last name of the user',
+    value: 'joestar',
+    example: 'joestar'
+};
+
+const PasswordData = {
+    type: 'string',
+    description: 'Password string',
+    value: '18e8336945bb4c459c9e5e0bd70d2e5a',
+    example: '18e8336945bb4c459c9e5e0bd70d2e5a'
+};
+
 const TextData = {
     type: 'string',
     description: 'Sample string',
@@ -84,6 +112,28 @@ const GetOneTodoParams = {
     }
 }
 
+const UserFullData = {
+    type: 'object',
+    description: 'User data without the password',
+    properties: {
+        username: UsernameData,
+        firstName: FirstNameData,
+        lastName: LastNameData,
+        dateUpdated: DateData,
+        dateCreated: DateData
+    }
+}
+
+const GetOneUserResponse = {
+    type: 'object',
+    description: 'Returns a user',
+    required: ['success', 'data'],
+    properties: {
+        success: SuccessData,
+        data: UserFullData
+    }
+};
+
 const GetManyTodoResponse = {
     type: 'object',
     description: 'Returns a list of todos',
@@ -93,6 +143,18 @@ const GetManyTodoResponse = {
         data: TodoListData
     }
 };
+
+const PostUserRequest = {
+    type: 'object',
+    description: 'User object data for creation',
+    required: ['username', 'firstName', 'lastName', 'password'],
+    properties: {
+        username: UsernameData,
+        firstName: FirstNameData,
+        lastName: LastNameData,
+        password: PasswordData,
+    }
+}
 
 const PostTodoRequest = {
     type: 'object',
@@ -130,5 +192,7 @@ exports.definitions = {
     GetOneTodoParams,
     GetOneTodoResponse,
     PostTodoRequest,
-    PutTodoRequest
+    PutTodoRequest,
+    PostUserRequest,
+    GetOneUserResponse
 };
