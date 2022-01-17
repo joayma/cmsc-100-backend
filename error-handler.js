@@ -9,6 +9,8 @@ exports.errorHandler = (error, request, response) => {
     let errorCode = error.message;
     let errorMessage = error.message;
 
+    console.log(statusCode);
+
     const errors = {
         'todo/not-found': 'Todo does not exist.',
         'request/malformed': 'Payload doesn\'t have the required properties.',
@@ -16,7 +18,8 @@ exports.errorHandler = (error, request, response) => {
         'auth/no-authorization-header': 'Authorization header not found.',
         'auth/no-user': 'User does not exist.',
         'auth/expired': 'Token has expired.',
-        'auth/unauthorized': 'You are not authorized to use this path.'
+        'auth/unauthorized': 'You are not authorized to use this path.',
+        'auth/discarded': 'The token has already been logged out.'
     }
 
     if (error.validation && error.validation.length && error.validationContext === 'body') {
