@@ -119,11 +119,29 @@ const GetManyTodoQuery = {
     }
 };
 
+const GetManyUserQuery = {
+    type: 'object',
+    description: 'Query parameters for getting many users',
+    properties: {
+        limit: LimitData,
+        startDate: DateData,
+        endDate: DateData
+    }
+};
+
 const GetOneTodoParams = {
     type: 'object',
     description: 'Parameter for getting one todo',
     properties: {
         id: UniqueIDData
+    }
+}
+
+const GetOneUserParams = {
+    type: 'object',
+    description: 'Parameter for getting one user',
+    properties: {
+        id: UsernameData
     }
 }
 
@@ -139,6 +157,23 @@ const UserFullData = {
         dateCreated: DateData
     }
 }
+
+const UserData = {
+    type: 'object',
+    description: 'User data without the first name, last name and password',
+    properties: {
+        username: UsernameData,
+        isAdmin: IsAdminData,
+        dateUpdated: DateData,
+        dateCreated: DateData
+    }
+}
+
+const UserListData = {
+    type: 'array',
+    description: 'A list of todos',
+    items: UserData
+};
 
 const GetOneUserResponse = {
     type: 'object',
@@ -157,6 +192,16 @@ const GetManyTodoResponse = {
     properties: {
         success: SuccessData,
         data: TodoListData
+    }
+};
+
+const GetManyUserResponse = {
+    type: 'object',
+    description: 'Returns a list of users',
+    required: ['success', 'data'],
+    properties: {
+        success: SuccessData,
+        data: UserListData
     }
 };
 
@@ -192,6 +237,17 @@ const PutTodoRequest = {
     }
 }
 
+const PutUserRequest = {
+    type: 'object',
+    description: 'User object data for update',
+    properties: {
+        firstName: FirstNameData,
+        lastName: LastNameData,
+        isAdmin: IsAdminData,
+        password: PasswordData,
+    }
+}
+
 const GetOneTodoResponse = {
     type: 'object',
     description: 'Returns a todo',
@@ -222,5 +278,9 @@ exports.definitions = {
     PutTodoRequest,
     PostUserRequest,
     GetOneUserResponse,
-    LoginResponse
+    LoginResponse,
+    GetOneUserParams,
+    GetManyUserResponse,
+    GetManyUserQuery,
+    PutUserRequest
 };
