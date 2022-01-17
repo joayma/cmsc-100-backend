@@ -15,8 +15,8 @@ const JWTData = {
 const UsernameData = {
     type: 'string',
     description: 'A unique username',
-    value: 'jojoestar',
-    example: 'jojoestar'
+    value: 'jojoestar3',
+    example: 'jojoestar3'
 };
 
 const FirstNameData = {
@@ -36,8 +36,8 @@ const LastNameData = {
 const PasswordData = {
     type: 'string',
     description: 'Password string',
-    value: '18e8336945bb4c459c9e5e0bd70d2e5a',
-    example: '18e8336945bb4c459c9e5e0bd70d2e5a'
+    value: 'stardustcrusaders',
+    example: 'stardustcrusaders'
 };
 
 const TextData = {
@@ -90,6 +90,7 @@ const TodoFullData = {
         id: UniqueIDData,
         text: TextData,
         isDone: IsDoneData,
+        username: UsernameData,
         dateUpdated: DateData,
         dateCreated: DateData
     }

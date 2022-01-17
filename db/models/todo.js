@@ -15,6 +15,11 @@ module.exports = (mongoose) => {
         unique: true,
         default: uuid
     },
+    username: {
+        type: String,
+        required: true,
+        index: true,
+    },
     text: {
         type: String,
         required: true
