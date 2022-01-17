@@ -3,6 +3,11 @@ const { User } = require('../../db');
 const { definitions } = require('../../definitions');
 const { LoginResponse, PostUserRequest } = definitions;
 
+/**
+ * route for logging in a user
+ * 
+ * @param {*} app 
+ */
 
 exports.login = (app) => {
  app.post('/login', {
@@ -36,6 +41,8 @@ exports.login = (app) => {
         const data = app.jwt.sign({
             username
         })
+
+        request.session.token = data;
 
         return {
             success: true,
