@@ -33,6 +33,13 @@ const LastNameData = {
     example: 'joestar'
 };
 
+const IsAdminData = {
+    type: 'boolean',
+    description: 'States whether a user is an admin or not',
+    value: false,
+    example: false
+};
+
 const PasswordData = {
     type: 'string',
     description: 'Password string',
@@ -127,6 +134,7 @@ const UserFullData = {
         username: UsernameData,
         firstName: FirstNameData,
         lastName: LastNameData,
+        isAdmin: IsAdminData,
         dateUpdated: DateData,
         dateCreated: DateData
     }
@@ -155,11 +163,12 @@ const GetManyTodoResponse = {
 const PostUserRequest = {
     type: 'object',
     description: 'User object data for creation',
-    required: ['username', 'firstName', 'lastName', 'password'],
+    required: ['username', 'firstName', 'lastName', 'isAdmin', 'password'],
     properties: {
         username: UsernameData,
         firstName: FirstNameData,
         lastName: LastNameData,
+        isAdmin: IsAdminData,
         password: PasswordData,
     }
 }
