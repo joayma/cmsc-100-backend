@@ -51,13 +51,9 @@ describe('For the route for logging a user POST: (/login)', () => {
         const payload = response.json();
         const { statusCode } = response;
         const { success, data } = payload;
-        // const { username, firstName, lastName } = data;    
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        // username.should.equal('sampleUser');
-        // firstName.should.equal('sampleFirst');
-        // lastName.should.equal('sampleLast');
     });
 
     // non-happy path: wrong password
