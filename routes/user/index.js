@@ -5,6 +5,7 @@ const { logout } = require('./logout');
 const { get } = require('./get');
 const { getMany } = require('./get-many');
 const { update } = require('./update');
+const { deleteOne } = require('./delete');
 
 /**
  * 
@@ -20,4 +21,5 @@ const { update } = require('./update');
     get(app);
     getMany(app);
     update(app);
+    deleteOne(app);
 }
