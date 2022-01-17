@@ -1,6 +1,7 @@
 const { create } = require('./create');
 const { login } = require('./login');
 const { auth } = require('./auth');
+const { logout } = require('./logout');
 /**
  * 
  *  initialize all routes for user
@@ -11,4 +12,5 @@ const { auth } = require('./auth');
     create(app);
     login(app);
     auth(app);
+    logout(app);
 }
