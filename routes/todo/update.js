@@ -39,7 +39,7 @@ exports.update = (app) => {
          */
         handler: async (request,response) => {
             const { params, body, user } = request;
-            const { username} = user;
+            const { username, isAdmin} = user;
             const { id } = params;
             // get text and isDone from the body
             const { text, isDone } = body;
@@ -50,13 +50,24 @@ exports.update = (app) => {
                     .badRequest('request/malformed')
             }
 
-            const oldData = await Todo.findOne({ id, username }).exec();
+            const oldData = await Todo.findOne({ id }).exec();
 
+            // if todo does not exist
             if (!oldData) {
                 return response
-                    .notFound('todo/not-found')
+                .notFound('todo/not-found')
             }
-
+            // if logged user is not an admin or is not the account owner
+            if (!isAdmin && username !== oldData.username) {
+                return response
+                    .unauthorized('auth/unauthorized');
+            }
+            // if admin tries to edit the text
+            if (isAdmin && text !== oldData.text && username !== oldData.username) {
+                return response
+                    .unauthorized('auth/unauthorized-update');
+            }
+            
             const update = {};
 
             if (text) {

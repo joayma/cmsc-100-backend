@@ -36,10 +36,11 @@ exports.deleteOne = (app) => {
          * 
          */
         handler: async (request,response) => {
-            const { params } = request;
+            const { params, user } = request;
+            const { username} = user;
             const { id } = params;
             
-            const data = await Todo.findOneAndDelete({ id }).exec();
+            const data = await Todo.findOneAndDelete({ id, username }).exec();
 
             if (!data) {
                 return response

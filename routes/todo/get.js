@@ -38,15 +38,23 @@ exports.get = (app) => {
          */
         handler: async (request,response) => {
             const { params, user } = request;
-            const { username} = user;
+            const { username, isAdmin} = user;
             const { id } = params;
 
-            const data = await Todo.findOne({ id, username }).exec();
+            const data = await Todo.findOne({ id }).exec();
 
+            // if todo does not exist
             if (!data) {
                 return response
-                    .notFound('todo/not-found')
+                .notFound('todo/not-found')
             }
+            
+            // if logged user is not an admin or is not the account owner
+            if (!isAdmin &&  username !== data.username) {
+                return response
+                    .unauthorized('auth/unauthorized');
+            }
+
         
             return {
                 success: true,
