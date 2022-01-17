@@ -1,16 +1,40 @@
 const { delay } = require('../../lib/delay');
-const { mongoose, Todo } = require('../../db');
+const { mongoose, Todo, User } = require('../../db');
 const { build } = require('../../app');
 require('should');
 require('tap').mochaGlobals();
 
 describe('For the route for getting many todos GET: (/todo)', () => {
     let app;
+    let authorization = '';
     const ids = [];
   
     before(async () => {
         // initialize the backend applicaiton
         app = await build();
+
+        const payload = {
+            username: 'User02',
+            firstName: 'First02',
+            lastName: 'Last02',
+            password: 'thisisahiddenpassword'
+        }
+
+        await app.inject({
+            method: 'POST',
+            url: '/user',
+            payload
+        });
+
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload
+        });
+
+        const { data: token } = response.json();
+        
+        authorization = `Bearer ${token}`;
 
         for (let i = 0; i < 5; i++) {
         const response = await app.inject({
@@ -37,6 +61,7 @@ describe('For the route for getting many todos GET: (/todo)', () => {
         for (const id of ids) {
             await Todo.findOneAndDelete({ id });
         }
+        await User.findOneAndDelete({ username: 'User02' });
         await mongoose.connection.close();
     });
 
@@ -44,7 +69,10 @@ describe('For the route for getting many todos GET: (/todo)', () => {
     it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 10 items', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/todo'
+            url: '/todo',
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();
@@ -73,7 +101,10 @@ describe('For the route for getting many todos GET: (/todo)', () => {
     it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 10 items and it should be in descending order where the first item should be the latest updated item in the database', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/todo'
+            url: '/todo',
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();
@@ -93,7 +124,9 @@ describe('For the route for getting many todos GET: (/todo)', () => {
         }
 
         const todos = await Todo
-            .find()
+            .find({
+                username: 'User02'
+            })
             .limit(5)
             .sort({
                 dateUpdated: -1
@@ -116,7 +149,10 @@ describe('For the route for getting many todos GET: (/todo)', () => {
 
         const response = await app.inject({
             method: 'GET',
-            url: `/todo?startDate=${startDate}`
+            url: `/todo?startDate=${startDate}`,
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();
@@ -142,7 +178,10 @@ describe('For the route for getting many todos GET: (/todo)', () => {
     it('it should return { success: true, data: array of todos } and has a status code of 200 when called using GET and has a default limit of 2 items', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: '/todo?limit=2'
+            url: '/todo?limit=2',
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();

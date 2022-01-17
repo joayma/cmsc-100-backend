@@ -1,5 +1,5 @@
 const { delay } = require('../../lib/delay');
-const { mongoose, Todo } = require('../../db');
+const { mongoose, Todo, User } = require('../../db');
 const { build } = require('../../app');
 const { todo } = require('tap');
 const should = require('should');
@@ -7,11 +7,35 @@ require('tap').mochaGlobals();
 
 describe('For the route for getting one todo GET: (/todo/:id)', () => {
     let app;
+    let authorization = '';
     const ids = [];
   
     before(async () => {
         // initialize the backend applicaiton
         app = await build();
+
+        const payload = {
+            username: 'User03',
+            firstName: 'First03',
+            lastName: 'Last03',
+            password: 'thisisahiddenpassword'
+        }
+
+        await app.inject({
+            method: 'POST',
+            url: '/user',
+            payload
+        });
+
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload
+        });
+
+        const { data: token } = response.json();
+        
+        authorization = `Bearer ${token}`;
 
         for (let i = 0; i < 1; i++) {
         const response = await app.inject({
@@ -24,6 +48,7 @@ describe('For the route for getting one todo GET: (/todo/:id)', () => {
         });
 
         const payload = response.json();
+        console.log(payload);
         const { data } = payload;
         const { id } = data;
 
@@ -38,6 +63,7 @@ describe('For the route for getting one todo GET: (/todo/:id)', () => {
         for (const id of ids) {
             await Todo.findOneAndDelete({ id });
         }
+        await User.findOneAndDelete({ username: 'User03' });
         await mongoose.connection.close();
       });
 
@@ -45,7 +71,10 @@ describe('For the route for getting one todo GET: (/todo/:id)', () => {
     it('it should return { success: true, data: todo } and has a status code of 200 when called using GET', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: `/todo/${ids[0]}`
+            url: `/todo/${ids[0]}`,
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();
@@ -69,7 +98,10 @@ describe('For the route for getting one todo GET: (/todo/:id)', () => {
     it('it should return { success: true, message: error message } and has a status code of 404 when called using GET and the id of todo does not exists', async () => {
         const response = await app.inject({
             method: 'GET',
-            url: `/todo/123456`
+            url: `/todo/123456`,
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();

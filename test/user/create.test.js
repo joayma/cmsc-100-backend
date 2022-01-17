@@ -40,7 +40,7 @@ describe('For the route for creating user POST: (/user)', () => {
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        username.should.equal('sampleUser');
+        username.should.equal('User01');
         firstName.should.equal('sampleFirst');
         lastName.should.equal('sampleLast');
 

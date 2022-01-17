@@ -1,5 +1,5 @@
 const { delay } = require('../../lib/delay');
-const { mongoose, Todo } = require('../../db');
+const { mongoose, Todo, User } = require('../../db');
 const { build } = require('../../app');
 const { todo } = require('tap');
 const should = require('should');
@@ -7,11 +7,35 @@ require('tap').mochaGlobals();
 
 describe('For the route for updating one todo PUT: (/todo/:id)', () => {
     let app;
+    let authorization = '';
     const ids = [];
   
     before(async () => {
         // initialize the backend applicaiton
         app = await build();
+
+        const payload = {
+            username: 'User04',
+            firstName: 'First04',
+            lastName: 'Last04',
+            password: 'thisisahiddenpassword'
+        }
+
+        await app.inject({
+            method: 'POST',
+            url: '/user',
+            payload
+        });
+
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload
+        });
+
+        const { data: token } = response.json();
+        
+        authorization = `Bearer ${token}`;
 
         for (let i = 0; i < 4; i++) {
         const response = await app.inject({
@@ -38,6 +62,7 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         for (const id of ids) {
             await Todo.findOneAndDelete({ id });
         }
+        await User.findOneAndDelete({ username: 'User04' });
         await mongoose.connection.close();
     });
 
@@ -46,6 +71,9 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         const response = await app.inject({
             method: 'PUT',
             url: `/todo/${ids[0]}`,
+            header: {
+                authorization
+            },
             payload: {
                 text: 'New todo text',
                 isDone: true
@@ -74,6 +102,9 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         const response = await app.inject({
             method: 'PUT',
             url: `/todo/${ids[1]}`,
+            header: {
+                authorization
+            },
             payload: {
                 text: 'New todo text 1'
             }
@@ -104,6 +135,9 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         const response = await app.inject({
             method: 'PUT',
             url: `/todo/${ids[2]}`,
+            header: {
+                authorization
+            },
             payload: {
                 isDone: true,
             }
@@ -133,8 +167,11 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         const response = await app.inject({
             method: 'PUT',
             url: `/todo/123456`,
+            header: {
+                authorization
+            },
             payload: {
-                text: 'New todo text',
+                text: 'New todo text 2',
                 isDone: true
             }
         });
@@ -154,7 +191,10 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
     it('it should return { success: true, message: error message } and has a status code of 400 when called using PUT and there is no payload', async () => {
         const response = await app.inject({
             method: 'PUT',
-            url: `/todo/${ids[3]}`
+            url: `/todo/${ids[3]}`,
+            header: {
+                authorization
+            },
         });
 
         const payload = response.json();
@@ -173,6 +213,9 @@ describe('For the route for updating one todo PUT: (/todo/:id)', () => {
         const response = await app.inject({
             method: 'PUT',
             url: `/todo/${ids[3]}`,
+            header: {
+                authorization
+            },
             payload: {}
         });
 

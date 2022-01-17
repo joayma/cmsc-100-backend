@@ -1,15 +1,38 @@
-const { mongoose, Todo } = require('../../db');
+const { mongoose, Todo, User } = require('../../db');
 const { build } = require('../../app');
 const should = require('should');
 require('tap').mochaGlobals();
 
 describe('For the route for creating todo POST: (/todo)', () => {
     let app;
+    let authorization = '';
     const ids = [];
     
     before(async () => {
         // initialize backend application
         app = await build();
+        const payload = {
+            username: 'User00',
+            firstName: 'First00',
+            lastName: 'Last00',
+            password: 'thisisahiddenpassword'
+        }
+
+        await app.inject({
+            method: 'POST',
+            url: '/user',
+            payload
+        });
+
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload
+        });
+
+        const { data: token } = response.json();
+        
+        authorization = `Bearer ${token}`;
     });
 
     after(async () => {
@@ -17,6 +40,7 @@ describe('For the route for creating todo POST: (/todo)', () => {
         for (const id of ids) {
             await Todo.findOneAndDelete({ id });
         }
+        await User.findOneAndDelete({ username: 'User00' });
         await mongoose.connection.close();
     });
     
@@ -25,20 +49,24 @@ describe('For the route for creating todo POST: (/todo)', () => {
         const response = await app.inject({
           method: 'POST',
           url: '/todo',
+          header: {
+            authorization
+          },
           payload: {
-            text: 'This is a todo',
+            text: 'This is a todo 1',
             isDone: false
-          }
+          },
         });
 
         const payload = response.json();
         const { statusCode } = response;
         const { success, data } = payload;
+        console.log(data);
         const { text, isDone, id } = data;    
 
         success.should.equal(true);
         statusCode.should.equal(200);
-        text.should.equal('This is a todo');
+        text.should.equal('This is a todo 1');
         isDone.should.equal(false);    
 
         const { 
@@ -59,6 +87,9 @@ describe('For the route for creating todo POST: (/todo)', () => {
         const response = await app.inject({
           method: 'POST',
           url: '/todo',
+          header: {
+            authorization
+          },
           payload: {
             text: 'This is a todo 2'
           }
@@ -92,6 +123,9 @@ describe('For the route for creating todo POST: (/todo)', () => {
       const response = await app.inject({
         method: 'POST',
         url: '/todo',
+        header: {
+            authorization
+          },
         payload: {
             isDone: true
         }
@@ -101,8 +135,8 @@ describe('For the route for creating todo POST: (/todo)', () => {
       const { statusCode } = response;
       const { success, message } = payload;
 
-      // success.should.equal(false);
       statusCode.should.equal(400);
+      success.should.equal(false);
       should.exist(message);
     })
 
@@ -111,14 +145,17 @@ describe('For the route for creating todo POST: (/todo)', () => {
       const response = await app.inject({
         method: 'POST',
         url: '/todo',
+        header: {
+            authorization
+          },
       });
       
       const payload = response.json();
       const { statusCode } = response;
       const { success, message } = payload;
 
-      // success.should.equal(false);
       statusCode.should.equal(400);
+      success.should.equal(false);
       should.exist(message);
     })
 });

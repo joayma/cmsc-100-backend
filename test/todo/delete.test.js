@@ -1,16 +1,40 @@
 const { delay } = require('../../lib/delay');
-const { mongoose, Todo } = require('../../db');
+const { mongoose, Todo, User } = require('../../db');
 const { build } = require('../../app');
 const should = require('should');
 require('tap').mochaGlobals();
 
 describe('For the route for deleting one todo DELETE: (/todo/:id)', () => {
     let app;
+    let authorization;
     const ids = [];
   
     before(async () => {
         // initialize the backend applicaiton
         app = await build();
+
+        const payload = {
+            username: 'User01',
+            firstName: 'First01',
+            lastName: 'Last01',
+            password: 'thisisahiddenpassword'
+        }
+
+        await app.inject({
+            method: 'POST',
+            url: '/user',
+            payload
+        });
+
+        const response = await app.inject({
+          method: 'POST',
+          url: '/login',
+          payload
+        });
+
+        const { data: token } = response.json();
+        
+        authorization = `Bearer ${token}`;
 
         for (let i = 0; i < 1; i++) {
         const response = await app.inject({
@@ -37,6 +61,7 @@ describe('For the route for deleting one todo DELETE: (/todo/:id)', () => {
         for (const id of ids) {
             await Todo.findOneAndDelete({ id });
         }
+        await User.findOneAndDelete({ username: 'User01' });
         await mongoose.connection.close();
     });
 
@@ -44,7 +69,10 @@ describe('For the route for deleting one todo DELETE: (/todo/:id)', () => {
     it('it should return { success: true } and has a status code of 200 when called using DELETE', async () => {
         const response = await app.inject({
             method: 'DELETE',
-            url: `/todo/${ids[0]}`
+            url: `/todo/${ids[0]}`,
+            header: {
+                authorization
+              },
         });
 
         const payload = response.json();
@@ -66,7 +94,10 @@ describe('For the route for deleting one todo DELETE: (/todo/:id)', () => {
     it('it should return { success: true, message: error message } and has a status code of 404 when called using DELETE and the id of todo does not exists', async () => {
         const response = await app.inject({
             method: 'DELETE',
-            url: '/todo/123456'
+            url: '/todo/123456',
+            header: {
+                authorization
+              },
         });
 
         const payload = response.json();
