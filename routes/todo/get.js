@@ -18,8 +18,17 @@ exports.get = (app) => {
             params: GetOneTodoParams,
             response: {
                 200: GetOneTodoResponse
-            }
+            },
+            security: [
+                {
+                    bearer: []
+                }
+            ]
         },
+        preHandler: app.auth([
+            app.verifyJWT
+        ]),
+
         /**
          * Get one todo from the database given a unique ID
          * 
@@ -28,10 +37,11 @@ exports.get = (app) => {
          * 
          */
         handler: async (request,response) => {
-            const { params } = request;
+            const { params, user } = request;
+            const { username} = user;
             const { id } = params;
 
-            const data = await Todo.findOne({ id }).exec();
+            const data = await Todo.findOne({ id, username }).exec();
 
             if (!data) {
                 return response

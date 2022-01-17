@@ -19,8 +19,17 @@ exports.update = (app) => {
             params: GetOneTodoParams,
             response: {
                 200: GetOneTodoResponse
-            }
+            },
+            security: [
+                {
+                    bearer: []
+                }
+            ]
         },
+        preHandler: app.auth([
+            app.verifyJWT
+        ]),
+
         /**
          * Updates one todo from the database given a unique ID and a payload
          * 
@@ -29,7 +38,8 @@ exports.update = (app) => {
          * 
          */
         handler: async (request,response) => {
-            const { params, body } = request;
+            const { params, body, user } = request;
+            const { username} = user;
             const { id } = params;
             // get text and isDone from the body
             const { text, isDone } = body;
@@ -40,7 +50,7 @@ exports.update = (app) => {
                     .badRequest('request/malformed')
             }
 
-            const oldData = await Todo.findOne({ id }).exec();
+            const oldData = await Todo.findOne({ id, username }).exec();
 
             if (!oldData) {
                 return response
