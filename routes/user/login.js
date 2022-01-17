@@ -29,9 +29,20 @@ exports.login = (app) => {
 
     handler: async (request, response) => {
         const { body } = request;
+        // only username and password will be checked
         const { username, password} = body;
 
+        if (!username || !password) {
+            return response
+                .badRequest('request/malformed')
+        }
+
         const user = await User.findOne({username}).exec();
+
+        if(!user) {
+            return response
+                .unauthorized('auth/no-user');
+        }
 
         if (!(await bcrypt.compare(password, user.password))) {
             return response

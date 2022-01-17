@@ -19,7 +19,9 @@ exports.errorHandler = (error, request, response) => {
         'auth/no-user': 'User does not exist.',
         'auth/expired': 'Token has expired.',
         'auth/unauthorized': 'You are not authorized to use this path.',
-        'auth/discarded': 'The token has already been logged out.'
+        'auth/discarded': 'The token has already been logged out.',
+        'request/username-taken': 'Username is already in use.',
+        'request/invalid-password': 'Invalid password.'
     }
 
     if (error.validation && error.validation.length && error.validationContext === 'body') {
